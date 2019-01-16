@@ -1,6 +1,6 @@
 {
   "name": "evergreen-scripts",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "Apache-2.0",
   "author": "Grant Hutchinson <grant@hutchdev.ca>",
   "description": "Extra Evergreen Scripts",
@@ -8,7 +8,7 @@
   "homepage": "https://github.com/hutchgrant/evergreen-scripts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hutchgrant/evergreen-scripts.git"
+    "url": "https://github.com/hutchgrant/evergreen-scripts.git"
   },
   "bin": {
     "evergreen-scripts": "./evergreen-scripts.js"
