@@ -1,0 +1,31 @@
+{
+  "name": "evergreen-scripts",
+  "version": "0.0.1",
+  "license": "MIT",
+  "author": "Grant Hutchinson <grant@hutchdev.ca>",
+  "description": "Extra Evergreen Scripts",
+  "main": "evergreen-scripts.js",
+  "bin": {
+    "evergreen-scripts": "./evergreen-scripts.js"
+  },
+  "keywords": [
+    "Web Components",
+    "Lit Element",
+    "Evergreen"
+  ],
+  "scripts": {
+    "lint": "eslint \"*.js\" \"./scripts/**/*.js\"",
+    "testbed": "npx create-evergreen-app test-app && echo 'node_modules' > ./test-app/.gitignore",
+    "test": "npm run testbed && mocha --timeout 2000"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^5.12.0",
+    "mocha": "^5.2.0"
+  },
+  "eslintConfig": {
+    "extends": "./config/.eslintrc"
+  },
+  "dependencies": {}
+}
