@@ -8,7 +8,7 @@ const runScript = () => {
   switch (script) {
 
     case 'gh-pages':
-      const args = [path.resolve(__dirname, `./scripts/${script}.js`)];
+      const args = [path.resolve(process.cwd(), `../scripts/${script}.js`)];
       const scriptProcess = spawn('node', args, { stdio: 'inherit' });
 
       scriptProcess.on('close', code => {

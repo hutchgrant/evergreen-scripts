@@ -51,6 +51,66 @@ The script will automatically:
 8) commit to gh-pages branch
 9) push to gh-pages branch.
 
+### Troubleshooting
+
+1) If you didn't already have the remote repository setup, make sure you `git remote add YOUR_REPO` and then run the script again
+2) If you are planning to serve on a specific repository, not an organization or user's repository or a custom domain e.g. https://myuser.github.io/somerepo instead of https://myuser.github.io/ 
+
+    You'll need to add/edit the basePath in your `webpack.common.js` of your application:
+
+    ```
+    output: {
+        path: path.join(__dirname, 'public'),
+        filename: '[name].[chunkhash].bundle.js',
+        basePath = '/somerepo/'  // add/edit this
+    },
+    ```
+
+    As well, edit the path to your manifest in your `src/index.html`
+    ```
+    <link rel="manifest" href="/YOUR_REPO/manifest.json">
+    ```
+
+    Plan is to automate this shortly.
+
+3) Your routing doesn't work? Add [this 404.html](https://raw.githubusercontent.com/hutchgrant/evergreen-scripts/master/template/404.html) file to your `src` folder. Modify it with your repository name if you're hosting on a specific repositories github page, and not a user/organization or custom domain.
+
+    ```
+    <meta http-equiv="refresh" content="0;URL='/YOUR_REPO'"></meta>
+    ```
+
+    Also, you need to add this to your `./src/index.html`, to replace the state on redirect.
+
+    ```
+        <script>
+        (function(){
+            var redirect = sessionStorage.redirect;
+            delete sessionStorage.redirect;
+            if (redirect && redirect != location.href) {
+            history.replaceState(null, null, redirect);
+            }
+        })();
+        </script>
+    ```
+
+    To make sure the 404 is added to your build, modify the `webpack.common.js` :
+
+    ```
+    plugins: [
+        // Add me
+        new CopyWebpackPlugin([
+        { from: '404.html', to: './404.html' }
+        ]),
+        /// 
+        new HtmlWebpackPlugin({
+        template: './index.html',
+        chunksSortMode: 'dependency'
+        }),
+    ]
+    ```
+
+    Again, plan is to automate this shortly
+
 ### License
 
 Released under the Apache-2.0 License
