@@ -73,7 +73,7 @@ The script will automatically:
 
     Plan is to automate this shortly.
 
-3) Your routing doesn't work? Add [this 404.html](https://raw.githubusercontent.com/hutchgrant/evergreen-scripts/master/template/404.html) file to your `src` folder. Modify it with your repository name if you're hosting on a specific repositories github page, and not a user/organization or custom domain.
+3) Your routing doesn't work? Add [this 404.html](https://raw.githubusercontent.com/hutchgrant/evergreen-scripts/master/templates/404.html) file to your `src` folder. Modify it with your repository name if you're hosting on a specific repositories github page, and not a user/organization or custom domain.
 
     ```
     <meta http-equiv="refresh" content="0;URL='/YOUR_REPO'"></meta>

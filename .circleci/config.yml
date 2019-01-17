@@ -31,4 +31,4 @@ jobs:
 
       - run:
           name: Run Unit Tests
-          command: yarn test
+          command: export NODE_ENV=testing && yarn test

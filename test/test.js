@@ -10,7 +10,7 @@ let script = 'gh-pages';
 let setup;
 
 before(async () => {
-  setup = new TestSetup(true);
+  setup = new TestSetup();
 });
 
 describe('after running script without script name', () => {
@@ -25,7 +25,6 @@ describe('after running script with gh-pages', function () {
   this.timeout(60000);
   before(async () => {
     process.chdir(path.resolve(process.cwd(), testApp));
-    console.log(process.cwd());
     await setup.node(['../evergreen-scripts.js', script]);
   });
 

@@ -29,6 +29,17 @@ const initGit = () => {
   });
 };
 
+/// If testing, add git config
+const gitConfig = async () => {
+  if (process.env.NODE_ENV === 'testing') {
+    console.log('Adding git config');
+    return await fs.copyFileSync(
+      path.resolve(process.cwd(), '../templates', 'gitconfig'),
+      path.join(process.cwd(), '.git', 'config')
+    );
+  }
+};
+
 /// create branch gh-pages
 const addBranch = () => {
   return new Promise(async (resolve, reject) => {
@@ -223,6 +234,8 @@ const ghpages = async () => {
     if (!await fs.existsSync(TARGET_DIR)) {
       console.log('Initializing git');
       await initGit();
+
+      await gitConfig();
 
       console.log('Add branch gh-pages');
       await addBranch();
