@@ -1,6 +1,7 @@
 # Evergreen Scripts
 
 [![GitHub release](https://img.shields.io/github/tag/hutchgrant/evergreen-scripts.svg)](https://github.com/hutchgrant/evergreen-scripts/tags)
+![CircleCI branch](https://img.shields.io/circleci/project/github/hutchgrant/evergreen-scripts/master.svg?style=plastic)
 [![GitHub issues](https://img.shields.io/github/issues-raw/hutchgrant/evergreen-scripts.svg)](https://github.com/hutchgrant/evergreen-scripts/issues)
 [![GitHub pulls](https://img.shields.io/github/issues-pr-raw/hutchgrant/evergreen-scripts.svg)](https://github.com/hutchgrant/evergreen-scripts/pulls)
 [![GitHub license](https://img.shields.io/badge/license-apache-blue.svg)](https://raw.githubusercontent.com/hutchgrant/evergreen-scripts/master/LICENSE)
@@ -54,7 +55,7 @@ The script will automatically:
 ### Troubleshooting
 
 1) If you didn't already have the remote repository setup, make sure you `git remote add YOUR_REPO` and then run the script again
-2) If you are planning to serve on a specific repository, not an organization or user's repository or a custom domain e.g. https://myuser.github.io/somerepo instead of https://myuser.github.io/ 
+2) If you are planning to serve on a specific repository, not an organization or user's repository or a custom domain e.g. https://myuser.github.io/somerepo instead of https://myuser.github.io/
 
     You'll need to add/edit the basePath in your `webpack.common.js` of your application:
 
@@ -101,7 +102,7 @@ The script will automatically:
         new CopyWebpackPlugin([
         { from: '404.html', to: './404.html' }
         ]),
-        /// 
+        ///
         new HtmlWebpackPlugin({
         template: './index.html',
         chunksSortMode: 'dependency'
