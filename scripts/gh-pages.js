@@ -2,32 +2,11 @@ const fs = require('fs');
 const fsPromises = fs.promises;
 const path = require('path');
 const copyFolder = require('../lib/copy-folder');
-const { spawn } = require('child_process');
 const TARGET_DIR = 'dist';
 const BUILD_DIR = 'public';
-let scriptProcess, args, command;
+const Process = require('../lib/process');
 
-const mngProcess = (resolve, reject) => {
-  scriptProcess.on('close', code => {
-    if (code !== 0) {
-      reject({
-        command: `${command} ${args.join(' ')}`
-      });
-      return;
-    }
-    resolve();
-  });
-};
-
-/// initialize git repository
-const initGit = () => {
-  return new Promise((resolve, reject) => {
-    command = 'git';
-    args = ['init'];
-    scriptProcess = spawn(command, args, { stdio: 'inherit' });
-    mngProcess(resolve, reject);
-  });
-};
+let scriptProcess = new Process(true);
 
 /// If testing, add git config
 const gitConfig = async () => {
@@ -43,103 +22,30 @@ const gitConfig = async () => {
 /// create branch gh-pages
 const addBranch = () => {
   return new Promise(async (resolve, reject) => {
-    command = 'git';
-    args = ['branch', 'gh-pages'];
-    let missingMaster = false;
+    let result;
 
-    scriptProcess = spawn(command, args);
-
-    scriptProcess.stderr.on('data', (data) => {
-      if (data.toString().substring(0, 41) === "fatal: Not a valid object name: 'master'.") {
-        missingMaster = true;
-      }
-    });
-    scriptProcess.on('close', async code => {
-      if (code !== 0) {
-        if (missingMaster) {
-          await createMaster();
-        } else {
-          reject({
-            command: `${command} ${args.join(' ')}`
-          });
-          return;
-        }
-      }
-      resolve();
-    });
-  });
-};
-
-/// Git add files
-const gitAddFiles = () => {
-  return new Promise((resolve, reject) => {
-    command = 'git';
-    args = ['add', '.'];
-    scriptProcess = spawn(command, args, { stdio: 'inherit' });
-    mngProcess(resolve, reject);
-  });
-};
-
-/// Create initial commit in order to add master branch
-const createMaster = () => {
-  const commitFiles = () => {
-    return new Promise((resolve, reject) => {
-      command = 'git';
-      args = ['commit', '-m', 'Initial Commit'];
-      scriptProcess = spawn(command, args, { stdio: 'inherit' });
-      mngProcess(resolve, reject);
-    });
-  };
-
-  return new Promise(async (resolve, reject) => {
     try {
-      await gitAddFiles();
-      await commitFiles();
-      resolve();
+      result = await scriptProcess.run('git', ['branch', 'gh-pages']);
+
     } catch (err) {
-      reject(err);
+      if (err.substring(0, 41) === "fatal: Not a valid object name: 'master'.") {
+        console.log('Creating master with initial commit');
+        await Promise.all(
+          await gitAddFiles(),
+          await scriptProcess.run('git', ['commit', '-m', 'Initial Commit'])
+        );
+        resolve();
+      } else {
+        console.log('ERROR2');
+        reject(result);
+      }
     }
   });
 };
 
-/// create worktree folder using gh-pages branch
-const addWorkTree = () => {
-  return new Promise((resolve, reject) => {
-    command = 'git';
-    args = ['worktree', 'add', '--detach', TARGET_DIR];
-    scriptProcess = spawn(command, args, { stdio: 'inherit' });
-    mngProcess(resolve, reject);
-  });
-};
-
-/// checkout orphan gh-pages within worktree
-const checkoutOrphan = () => {
-  return new Promise((resolve, reject) => {
-    command = 'git';
-    args = ['checkout', '--orphan', 'gh-pages'];
-    scriptProcess = spawn(command, args, { stdio: 'inherit' });
-    mngProcess(resolve, reject);
-  });
-};
-
-/// Build project
-const npmBuild = () => {
-  return new Promise((resolve, reject) => {
-    command = 'npm';
-    args = ['run', 'build'];
-    scriptProcess = spawn(command, args, { stdio: 'inherit' });
-    mngProcess(resolve, reject);
-  });
-};
-
-/// remove initial files in worktree
-const gitRemoveFiles = () => {
-  return new Promise((resolve, reject) => {
-    command = 'git';
-    args = ['rm', '-rf', '.'];
-    scriptProcess = spawn(command, args, { stdio: 'inherit' });
-    mngProcess(resolve, reject);
-  });
+/// Git add files
+const gitAddFiles = async () => {
+  return await scriptProcess.run('git', ['add', '.']);
 };
 
 /// copy build files
@@ -164,23 +70,23 @@ const copyBuildFiles = async () => {
   );
 };
 
-/// commit everything in worktree folder
-const commitGHPages = () => {
-  return new Promise((resolve, reject) => {
-    command = 'git';
-    args = ['commit', '-m', 'Updating gh-pages'];
-    scriptProcess = spawn(command, args, { stdio: 'inherit' });
-    mngProcess(resolve, reject);
-  });
-};
-
 /// push new gh-pages branch
-const pushGHPages = () => {
-  return new Promise((resolve, reject) => {
-    command = 'git';
-    args = ['push', 'origin', 'gh-pages'];
-    scriptProcess = spawn(command, args, { stdio: 'inherit' });
-    mngProcess(resolve, reject);
+const pushGHPages = async () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      await scriptProcess.run('git', ['push', 'origin', 'gh-pages']);
+      resolve();
+    } catch (err) {
+      if (err.substring(0, 45) === 'fatal: Could not read from remote repository.') {
+        console.log('******************************');
+        console.log('No remote repository added. ');
+        console.log("You need to ensure sure you've created a repository on github and added it locally with: ");
+        console.log('git remote add YOUR_REPO');
+        console.log("Once you've added a remote repo, re-run this script.");
+        console.log('******************************');
+      }
+      reject(err);
+    }
   });
 };
 
@@ -188,13 +94,12 @@ const serve = () => {
   return new Promise(async (resolve, reject) => {
     try {
       console.log('Building project');
-      await npmBuild();
+      await scriptProcess.run('npm', ['run', 'build']);
 
       // Change back to worktree directory
       process.chdir(path.resolve(process.cwd(), TARGET_DIR));
-
       console.log('Removing files...');
-      await gitRemoveFiles();
+      await scriptProcess.run('git', ['rm', '-rf', '.']);
 
       console.log('Copying build files to gh-pages worktree');
       await copyBuildFiles();
@@ -203,7 +108,7 @@ const serve = () => {
       await gitAddFiles();
 
       console.log('Committing to gh-pages branch');
-      await commitGHPages();
+      await scriptProcess.run('git', ['commit', '-m', 'Updating gh-pages']);
 
       console.log('Pushing GH pages');
       await pushGHPages();
@@ -216,16 +121,15 @@ const serve = () => {
       console.log('---------------------------------------------------');
       console.log('--Make sure you add dist to your .gitignore file---');
       console.log('---------------------------------------------------');
-
       resolve();
     } catch (err) {
+      console.log('ERROR');
       reject(err);
     }
   });
 };
 
 const ghpages = async () => {
-
   try {
     // change directory to project directory
     process.chdir(path.resolve(process.cwd()));
@@ -233,7 +137,7 @@ const ghpages = async () => {
     // check if dist folder exists
     if (!await fs.existsSync(TARGET_DIR)) {
       console.log('Initializing git');
-      await initGit();
+      await scriptProcess.run('git', ['init']);
 
       await gitConfig();
 
@@ -241,12 +145,12 @@ const ghpages = async () => {
       await addBranch();
 
       console.log('Add worktree dist gh-pages');
-      await addWorkTree();
+      await scriptProcess.run('git', ['worktree', 'add', '--detach', TARGET_DIR]);
 
       // change to worktree directory
       process.chdir(path.resolve(process.cwd(), TARGET_DIR));
       console.log('Checkout orphan gh-pages');
-      await checkoutOrphan();
+      await scriptProcess.run('git', ['checkout', '--orphan', 'gh-pages']);
 
       // change back to project directory
       process.chdir(path.resolve(process.cwd(), '..'));

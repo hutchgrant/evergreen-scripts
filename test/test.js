@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 const chai = require('chai').use(require('chai-as-promised'));
 const should = chai.should(); // eslint-disable-line
 const fs = require('fs');
-const fsPromises = fs.promises;
+const fsPromises = fs.promises; // eslint-disable-line
 const path = require('path');
 const TestSetup = require('./setup');
 const testApp = 'test-app';
@@ -10,12 +10,12 @@ let script = 'gh-pages';
 let setup;
 
 before(async () => {
-  setup = new TestSetup();
+  setup = new TestSetup(true);
 });
 
 describe('after running script without script name', () => {
   it('should display the missing script name error', async () => {
-    await setup.node(['./evergreen-scripts.js']).catch((err) => {
+    await setup.run('node', ['./evergreen-scripts.js']).catch((err) => {
       expect(err).to.be.equal('Error, missing script name\n');
     });
   });
@@ -25,7 +25,11 @@ describe('after running script with gh-pages', function () {
   this.timeout(60000);
   before(async () => {
     process.chdir(path.resolve(process.cwd(), testApp));
-    await setup.node(['../evergreen-scripts.js', script]);
+    try {
+      await setup.run('node', ['../evergreen-scripts.js', script]);
+    } catch (err) {
+      console.log(err);
+    }
   });
 
   it('should create the dist worktree', async () => {
@@ -34,13 +38,13 @@ describe('after running script with gh-pages', function () {
     expect(targetExists).to.be.true;
   });
   it('should have the worktree on the correct branch', async () => {
-    const branch = await setup.git('cat', ['.git/worktrees/dist/HEAD']);
+    const branch = await setup.run('cat', ['.git/worktrees/dist/HEAD']);
 
     expect(branch).to.be.equal('ref: refs/heads/gh-pages\n');
   });
 
   it('should have the worktree as a git repository', async () => {
-    const repository = await setup.git('cat', ['.git/worktrees/dist/gitdir']);
+    const repository = await setup.run('cat', ['.git/worktrees/dist/gitdir']);
     const directory = path.resolve(process.cwd(), 'dist', '.git');
 
     expect(repository).to.be.equal(directory + '\n');
