@@ -11,6 +11,7 @@ let setup;
 
 before(async () => {
   setup = new TestSetup();
+  await setup.addHomepage(testApp);
 });
 
 describe('after running script without script name', () => {

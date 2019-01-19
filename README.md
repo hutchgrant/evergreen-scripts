@@ -24,7 +24,13 @@ To make life easier and automate the task of deploying to gh-pages, we've create
 Add this script to your `package.json` with:
 
 ```
-npm i evergreen-scripts
+npm i -D evergreen-scripts
+```
+
+Make sure the project already has the remote repository setup:
+
+```
+git remote add YOUR_REPO
 ```
 
 Add script in your `package.json`
@@ -34,7 +40,10 @@ Add script in your `package.json`
 }
 ```
 
-Anytime you want to update the files being served on github pages, simply:
+As well make sure you modify/add the `homepage` value in package.json with the url to your github page
+
+
+Anytime you want to build/update the files being served on github pages, simply:
 
 ```
 npm run gh-pages
@@ -47,70 +56,19 @@ The script will automatically:
 3) add worktree dist with branch gh-pages
 4) checkout orphan gh-pages
 5) remove the initial files
-6) build project
-7) copy build files to work tree
-8) commit to gh-pages branch
-9) push to gh-pages branch.
+6) create an additional webpack config speciifical for your github pages path
+7) add a 404.html file that forwards to the index.html file so routing works as you would expect in a SPA.
+8) build project
+9) copy build files to work tree
+10) commit to gh-pages branch
+11) push to gh-pages branch.
 
 ### Troubleshooting
 
 1) If you didn't already have the remote repository setup, make sure you `git remote add YOUR_REPO` and then run the script again
-2) If you are planning to serve on a specific repository, not an organization or user's repository or a custom domain e.g. https://myuser.github.io/somerepo instead of https://myuser.github.io/
-
-    You'll need to add/edit the basePath in your `webpack.common.js` of your application:
-
-    ```
-    output: {
-        path: path.join(__dirname, 'public'),
-        filename: '[name].[chunkhash].bundle.js',
-        basePath = '/somerepo/'  // add/edit this
-    },
-    ```
-
-    As well, edit the path to your manifest in your `src/index.html`
-    ```
-    <link rel="manifest" href="/YOUR_REPO/manifest.json">
-    ```
-
-    Plan is to automate this shortly.
-
-3) Your routing doesn't work? Add [this 404.html](https://raw.githubusercontent.com/hutchgrant/evergreen-scripts/master/templates/404.html) file to your `src` folder. Modify it with your repository name if you're hosting on a specific repositories github page, and not a user/organization or custom domain.
-
-    ```
-    <meta http-equiv="refresh" content="0;URL='/YOUR_REPO'"></meta>
-    ```
-
-    Also, you need to add this to your `./src/index.html`, to replace the state on redirect.
-
-    ```
-        <script>
-        (function(){
-            var redirect = sessionStorage.redirect;
-            delete sessionStorage.redirect;
-            if (redirect && redirect != location.href) {
-            history.replaceState(null, null, redirect);
-            }
-        })();
-        </script>
-    ```
-
-    To make sure the 404 is added to your build, modify the `webpack.common.js` :
-
-    ```
-    plugins: [
-        // Add me
-        new CopyWebpackPlugin([
-        { from: '404.html', to: './404.html' }
-        ]),
-        ///
-        new HtmlWebpackPlugin({
-        template: './index.html',
-        chunksSortMode: 'dependency'
-        }),
-    ]
-    ```
-
-    Again, plan is to automate this shortly
+2) I'm changing my homepage and it's not being reflected in my build, what do I do? After the initial build, that var isn't read anymore, you can however change the public path manually in the generated `ghpages.config.js` file
+3) Where do I change the title of the 404 and index? `webpack.config.ghpages.js` at the top.
+4) How do I reset my build to default? delete the dist folder and run the script again.
 
 ### License
 
