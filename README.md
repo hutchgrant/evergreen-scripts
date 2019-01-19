@@ -19,7 +19,7 @@ This repo and Project Evergreen itself are still young and maturing rapidly.  Th
 
 ## Serve apps via gh-pages
 
-To make life easier and automate the task of deploying to gh-pages, we've created a simple script.
+To make life easier and automate the task of deploying to gh-pages
 
 Add this script to your `package.json` with:
 
@@ -33,15 +33,13 @@ Make sure the project already has the remote repository setup:
 git remote add YOUR_REPO
 ```
 
-Add script in your `package.json`
+Modify your `package.json` with the script and your github pages url
 ```
+"homepage": "https://hutchgrant.github.io/evergreen-web-components"
 "scripts": {
     "gh-pages": "evergreen-scripts gh-pages"
 }
 ```
-
-As well make sure you modify/add the `homepage` value in package.json with the url to your github page
-
 
 Anytime you want to build/update the files being served on github pages, simply:
 
@@ -56,7 +54,7 @@ The script will automatically:
 3) add worktree dist with branch gh-pages
 4) checkout orphan gh-pages
 5) remove the initial files
-6) create an additional webpack config speciifical for your github pages path
+6) create an additional webpack config for your github pages path
 7) add a 404.html file that forwards to the index.html file so routing works as you would expect in a SPA.
 8) build project
 9) copy build files to work tree

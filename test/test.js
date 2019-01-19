@@ -51,6 +51,30 @@ describe('after running script with gh-pages', function () {
     expect(repository).to.be.equal(directory + '\n');
   });
 
+  it('should have created a ghpages config file', async () => {
+    const targetExists = await fs.existsSync(path.resolve(process.cwd(), 'ghpages.config.js'));
+
+    expect(targetExists).to.be.true;
+  });
+
+  it('should have copied the ghpages webpack config file', async () => {
+    const targetExists = await fs.existsSync(path.resolve(process.cwd(), 'webpack.config.ghpages.js'));
+
+    expect(targetExists).to.be.true;
+  });
+
+  it('should have copied the 404 html file', async () => {
+    const targetExists = await fs.existsSync(path.resolve(process.cwd(), 'src', '404.html'));
+
+    expect(targetExists).to.be.true;
+  });
+
+  it('should have copied the index.ghpages html file', async () => {
+    const targetExists = await fs.existsSync(path.resolve(process.cwd(), 'src', 'index.ghpages.html'));
+
+    expect(targetExists).to.be.true;
+  });
+
   it('should have run the build script', async () => {
     const targetExists = await fs.existsSync(path.resolve(process.cwd(), 'public', 'index.html'));
 
