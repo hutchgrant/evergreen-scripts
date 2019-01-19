@@ -21,7 +21,7 @@ This repo and Project Evergreen itself are still young and maturing rapidly.  Th
 
 To make life easier and automate the task of deploying to gh-pages
 
-Add this script to your `package.json` with:
+Install
 
 ```
 npm i -D evergreen-scripts
@@ -33,9 +33,9 @@ Make sure the project already has the remote repository setup:
 git remote add YOUR_REPO
 ```
 
-Modify your `package.json` with the script and your github pages url
+Modify your `package.json` by adding the script and your github pages url
 ```
-"homepage": "https://hutchgrant.github.io/evergreen-web-components"
+"homepage": "https://hutchgrant.github.io/evergreen-web-components",
 "scripts": {
     "gh-pages": "evergreen-scripts gh-pages"
 }
