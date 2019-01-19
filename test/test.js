@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 const chai = require('chai').use(require('chai-as-promised'));
 const should = chai.should(); // eslint-disable-line
 const fs = require('fs');
-const fsPromises = fs.promises; // eslint-disable-line
+const fsPromises = fs.promises;
 const path = require('path');
 const TestSetup = require('./setup');
 const testApp = 'test-app';
@@ -10,7 +10,7 @@ let script = 'gh-pages';
 let setup;
 
 before(async () => {
-  setup = new TestSetup(true);
+  setup = new TestSetup();
 });
 
 describe('after running script without script name', () => {
