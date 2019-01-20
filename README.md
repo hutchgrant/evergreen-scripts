@@ -21,13 +21,13 @@ This repo and Project Evergreen itself are still young and maturing rapidly.  Th
 
 To make life easier and automate the task of deploying to gh-pages
 
-Install
+Install Evergreen Scripts
 
 ```
 npm i -D evergreen-scripts
 ```
 
-Make sure the project already has the remote repository setup:
+Add your remote github repository:
 
 ```
 git remote add YOUR_REPO
@@ -35,13 +35,13 @@ git remote add YOUR_REPO
 
 Modify your `package.json` by adding the script and your github pages url
 ```
-"homepage": "https://hutchgrant.github.io/evergreen-web-components",
+"homepage": "https://hutchgrant.github.io/evergreen-web-components/",
 "scripts": {
     "gh-pages": "evergreen-scripts gh-pages"
 }
 ```
 
-Anytime you want to build/update the files being served on github pages, simply:
+Build, update, and serve files on github pages:
 
 ```
 npm run gh-pages
@@ -50,20 +50,21 @@ npm run gh-pages
 The script will automatically:
 
 1) (re)initialize git
-2) create branch gh-pages, if master doesn't exist it will create an initial commit
-3) add worktree dist with branch gh-pages
-4) checkout orphan gh-pages
-5) remove the initial files
-6) create an additional webpack config for your github pages path
-7) add a 404.html file that forwards to the index.html file so routing works as you would expect in a SPA.
-8) build project
-9) copy build files to work tree
+2) create branch gh-pages, if master doesn't yet exist, it will create an initial commit
+3) add git worktree dist with orphaned branch gh-pages
+4) create a `ghpages.config.js` cache file containing a publicPath based on the `homepage` value in your package.json
+4) create an additional webpack config for your github pages path
+5) add a 404.html file that redirects to the index.html file so that routing works as you would expect in a SPA.
+6) add a custom index.ghpages.html with a script to replace the state on client redirect
+7) add a unique build script to your `package.json` file
+8) build project using `webpack.config.ghpages.js`
+8) git remove the previous files in gh-pages branch(`dist`)
+9) copy build files to worktree(`dist`)
 10) commit to gh-pages branch
 11) push to gh-pages branch.
 
-### Troubleshooting
+A guide can be found within the [Project Evergreen wiki](https://github.com/ProjectEvergreen/create-evergreen-app/wiki/Guide-Serving-Apps-via-Github-Pages)
 
-1) How do I reset my build to default? delete the dist folder and run the script again.
 
 ### License
 
