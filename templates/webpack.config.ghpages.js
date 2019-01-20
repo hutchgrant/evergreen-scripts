@@ -5,8 +5,6 @@ const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const webpackMerge = require('webpack-merge');
 const { publicPath } = require('./ghpages.config.js');
 
-const title = 'Create Evergeen App';
-
 module.exports = webpackMerge(commonConfig, {
 
   mode: 'production',
@@ -23,13 +21,11 @@ module.exports = webpackMerge(commonConfig, {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'index.ghpages.html',
-      title,
       publicPath
     }),
     new HtmlWebpackPlugin({
       filename: '404.html',
       template: '404.html',
-      title,
       publicPath
     }),
 

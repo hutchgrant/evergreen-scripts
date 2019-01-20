@@ -63,10 +63,7 @@ The script will automatically:
 
 ### Troubleshooting
 
-1) If you didn't already have the remote repository setup, make sure you `git remote add YOUR_REPO` and then run the script again
-2) I'm changing my homepage and it's not being reflected in my build, what do I do? After the initial build, that var isn't read anymore, you can however change the public path manually in the generated `ghpages.config.js` file
-3) Where do I change the title of the 404 and index? `webpack.config.ghpages.js` at the top.
-4) How do I reset my build to default? delete the dist folder and run the script again.
+1) How do I reset my build to default? delete the dist folder and run the script again.
 
 ### License
 

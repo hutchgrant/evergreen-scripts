@@ -251,6 +251,14 @@ const ghpages = async () => {
       await serve();
     } else {
       // folder dist exists!
+      /// Read package.json to determine the basepath of the github repository
+      console.log('Reading homepage url');
+      projectIsRepostory = readPackage();
+
+      /// write .ghpages.config.js for webpack
+      console.log('Writing ghpages.config.js');
+      await writeGHCfg();
+
       await serve();
     }
     process.exit(); // eslint-disable-line no-process-exit
