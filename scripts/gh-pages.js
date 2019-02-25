@@ -83,6 +83,7 @@ const checkoutOrphan = async() => {
       resolve();
     } catch (err) {
       if (err.substring(0, 48) === "fatal: A branch named 'gh-pages' already exists.") {
+        await scriptProcess.run('git', ['checkout', 'gh-pages']);
         resolve();
       } else {
         reject();
