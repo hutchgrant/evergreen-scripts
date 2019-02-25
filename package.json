@@ -1,6 +1,6 @@
 {
   "name": "evergreen-scripts",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "license": "Apache-2.0",
   "author": "Grant Hutchinson <grant@hutchdev.ca>",
   "description": "Extra Evergreen Scripts",
