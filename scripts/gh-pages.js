@@ -10,6 +10,7 @@ let PROJECT_DIR = ''; // Project Directory
 let PRJ_BASE_PATH = '/'; // Project Url Base Path
 let HOMEPAGE = ''; // Full Url of project github page
 let scriptProcess = new Process(true);
+let SRC_DIR = process.argv[2];
 
 /// If testing, add git config
 const gitConfig = async () => {
@@ -37,6 +38,8 @@ const addBranch = () => {
           await gitAddFiles(),
           await scriptProcess.run('git', ['commit', '-m', 'Initial Commit'])
         );
+        resolve();
+      } else if (err.substring(0, 48) === "fatal: A branch named 'gh-pages' already exists.") {
         resolve();
       } else {
         reject(result);
@@ -70,6 +73,22 @@ const copyBuildFiles = async () => {
       }
     })
   );
+};
+
+/// checkout orphan branch
+const checkoutOrphan = async() => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      await scriptProcess.run('git', ['checkout', '--orphan', 'gh-pages']);
+      resolve();
+    } catch (err) {
+      if (err.substring(0, 48) === "fatal: A branch named 'gh-pages' already exists.") {
+        resolve();
+      } else {
+        reject();
+      }
+    }
+  });
 };
 
 /// push new gh-pages branch
@@ -112,8 +131,8 @@ const readPackage = () => {
 const copyTemplates = async () => {
 
   const templates = [
-    { file: 'index.ghpages.html', target: 'src' },
-    { file: '404.html', target: 'src' },
+    { file: 'index.ghpages.html', target: SRC_DIR },
+    { file: '404.html', target: SRC_DIR },
     { file: 'webpack.config.ghpages.js', target: '.' }
   ];
 
@@ -240,7 +259,7 @@ const ghpages = async () => {
       process.chdir(path.resolve(process.cwd(), TARGET_DIR));
 
       console.log('Checkout orphan gh-pages');
-      await scriptProcess.run('git', ['checkout', '--orphan', 'gh-pages']);
+      await checkoutOrphan();
 
       // change back to project directory
       process.chdir(PROJECT_DIR);

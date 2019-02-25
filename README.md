@@ -34,7 +34,7 @@ git remote add YOUR_REPO
 ```
 
 Modify your `package.json` by adding the script and your github pages url
-```
+```js
 "homepage": "https://hutchgrant.github.io/evergreen-web-components/",
 "scripts": {
     "gh-pages": "evergreen-scripts gh-pages"
@@ -53,17 +53,29 @@ The script will automatically:
 2) create branch gh-pages, if master doesn't yet exist, it will create an initial commit
 3) add git worktree dist with orphaned branch gh-pages
 4) create a `ghpages.config.js` cache file containing a publicPath based on the `homepage` value in your package.json
-4) create an additional webpack config for your github pages path
-5) add a 404.html file that redirects to the index.html file so that routing works as you would expect in a SPA.
-6) add a custom index.ghpages.html with a script to replace the state on client redirect
-7) add a unique build script to your `package.json` file
-8) build project using `webpack.config.ghpages.js`
-8) git remove the previous files in gh-pages branch(`dist`)
-9) copy build files to worktree(`dist`)
-10) commit to gh-pages branch
-11) push to gh-pages branch.
+5) create an additional webpack config for your github pages path
+6) add a 404.html file that redirects to the index.html file so that routing works as you would expect in a SPA.
+7) add a custom index.ghpages.html with a script to replace the state on client redirect
+8) add a unique build script to your `package.json` file
+9) build project using `webpack.config.ghpages.js`
+10) git remove the previous files in gh-pages branch(`dist`)
+11) copy build files to worktree(`dist`)
+12) commit to gh-pages branch
+13) push to gh-pages branch.
 
-A guide can be found within the [Project Evergreen wiki](https://github.com/ProjectEvergreen/create-evergreen-app/wiki/Guide-Serving-Apps-via-Github-Pages)
+Optionally, as of 0.0.6, you can modify the default application `src` directory which the script uses, by adding the argument `--src <your-directory>` to the run script. 
+
+E.g. in your `package.json`
+
+```js
+"scripts": {
+    "gh-pages": "evergreen-scripts gh-pages --src docs"
+}
+```
+
+Basic information on args and usage can be found by adding `--help` argument.
+
+A guide for usage can be found within the [Project Evergreen wiki](https://github.com/ProjectEvergreen/create-evergreen-app/wiki/Guide-Serving-Apps-via-Github-Pages).  
 
 
 ### License

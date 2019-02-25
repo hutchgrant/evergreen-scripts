@@ -32,5 +32,8 @@
   "eslintConfig": {
     "extends": "./config/.eslintrc"
   },
-  "dependencies": {}
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "commander": "^2.19.0"
+  }
 }
